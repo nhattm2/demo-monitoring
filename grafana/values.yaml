@@ -1,0 +1,9 @@
+ingress:
+  enabled: true
+  annotations: {}
+  labels: {}
+  path: /
+  hosts:
+    - grafana.digital.vn
+persistence:
+  enabled: true

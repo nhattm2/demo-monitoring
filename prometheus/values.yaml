@@ -1,0 +1,10 @@
+alertmanager:
+  ingress:
+    enabled: true
+    hosts:
+      - alertmanager.digital.vn
+server:
+  ingress:
+    enabled: true
+    hosts:
+      - prometheus.digital.vn
