@@ -1,10 +1,53 @@
-alertmanager:
-  ingress:
-    enabled: true
-    hosts:
-      - alertmanager.digital.vn
 server:
   ingress:
     enabled: true
     hosts:
       - prometheus.digital.vn
+  global:
+    scrape_interval: 5s
+    scrape_timeout: 2s
+    evaluation_interval: 5s
+alertmanager:
+  ingress:
+    enabled: true
+    hosts:
+      - alertmanager.digital.vn
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: Instances
+        rules:
+          - alert: InstanceDown
+            expr: up == 0
+            for: 8s
+            labels:
+              severity: page
+            annotations:
+              description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.'
+              summary: 'Instance {{ $labels.instance }} down'
+alertmanagerFiles:
+  alertmanager.yml:
+    global:
+      smtp_smarthost: 'smtp.domain.net:587'
+      smtp_from: 'AlertManager <mailer@domain.com>'
+      smtp_require_tls: true
+      smtp_hello: 'alertmanager'
+      smtp_auth_username: 'username'
+      smtp_auth_password: 'password'
+      slack_api_url: 'https://hooks.slack.com/services/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'
+
+    route:
+      group_by: ['instance', 'alert']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 3h
+      receiver: team-1
+
+    receivers:
+      - name: 'team-1'
+        email_configs:
+          - to: 'user@domain.com'
+        slack_configs:
+          - channel: 'general'
+          - username: 'AlertManager'
+          - icon_emoji: ':joy:'
